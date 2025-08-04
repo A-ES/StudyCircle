@@ -1,0 +1,16 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Dependencies and environment files
+node_modules/
+.env
+venv/
+env/
+
+# IDE and OS specific files
+.vscode/
+.idea/
+.DS_Store
