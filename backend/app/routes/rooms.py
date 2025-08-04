@@ -4,7 +4,6 @@ import uuid
 
 router = APIRouter()
 
-# In-memory DB for prototyping only
 rooms_db = []
 
 @router.get("/")
