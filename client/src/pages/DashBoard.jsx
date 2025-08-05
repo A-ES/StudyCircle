@@ -1,6 +1,8 @@
 // src/pages/Dashboard.jsx
 import React, { useState, useEffect } from 'react';
 import { getRooms, createRoom } from '../api/index';
+import CreateRoomForm from '../components/CreateRoomForm';
+import RoomList from '../components/RoomList';
 
 const Dashboard = () => {
   const [rooms, setRooms] = useState([]);
@@ -14,12 +16,15 @@ const Dashboard = () => {
     const fetchRooms = async () => {
       try {
         setLoading(true);
+        setError(null);
         const response = await getRooms();
-        setRooms(Array.isArray(response.data) ? response.data : []);
+        setRooms(Array.isArray(response.data.rooms) ? response.data.rooms : []);
+
+        console.log("API response:", response);
+
       } catch (err) {
         console.error('Error fetching rooms:', err);
         setError('Failed to load rooms');
-        setRooms([]);
       } finally {
         setLoading(false);
       }
@@ -30,11 +35,14 @@ const Dashboard = () => {
 
   const handleCreateRoom = async () => {
     if (!newRoomName.trim() || !newRoomDescription.trim()) return;
+    if (rooms.some((room) => room.name === newRoomName.trim())) {
+      setError('Room with this name already exists');
+      return;
+    }
     try {
       setCreatingRoom(true);
       const response = await createRoom(newRoomName, newRoomDescription);
       setRooms((prevRooms) => [...prevRooms, response.data.room]);
-
       setNewRoomName('');
       setNewRoomDescription('');
     } catch (err) {
@@ -45,42 +53,21 @@ const Dashboard = () => {
     }
   };
 
-  if (loading) return <div>Loading rooms...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (loading) return <div className="p-6">Loading rooms...</div>;
+  if (error) return <div className="p-6 text-red-500">Error: {error}</div>;
 
   return (
-    <div className="dashboard">
-      <h1>Study Rooms</h1>
-      <div className="create-room">
-        <input
-          type="text"
-          placeholder="Enter room name"
-          value={newRoomName}
-          onChange={(e) => setNewRoomName(e.target.value)}
-          disabled={creatingRoom}
-        />
-        <textarea
-          placeholder="Enter room description"
-          value={newRoomDescription}
-          onChange={(e) => setNewRoomDescription(e.target.value)}
-          disabled={creatingRoom}
-        />
-        <button onClick={handleCreateRoom} disabled={creatingRoom}>
-          {creatingRoom ? 'Creating...' : 'Create Room'}
-        </button>
-      </div>
-      {rooms.length === 0 ? (
-        <p>No rooms available</p>
-      ) : (
-        <div className="room-list">
-          {rooms.map((room) => (
-            <div key={room.id} className="room-card">
-              <h3>{room.name}</h3>
-              <p>{room.description}</p>
-            </div>
-          ))}
-        </div>
-      )}
+    <div className="dashboard p-6 max-w-3xl mx-auto">
+      <h1 className="text-3xl font-bold mb-6">Study Rooms</h1>
+      <CreateRoomForm
+        newRoomName={newRoomName}
+        newRoomDescription={newRoomDescription}
+        onNameChange={(e) => setNewRoomName(e.target.value)}
+        onDescriptionChange={(e) => setNewRoomDescription(e.target.value)}
+        onCreate={handleCreateRoom}
+        creatingRoom={creatingRoom}
+      />
+      <RoomList rooms={rooms} />
     </div>
   );
 };
