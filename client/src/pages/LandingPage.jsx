@@ -28,12 +28,13 @@ export default function LandingPage() {
               <a href="#contact" className="nav-link">Contact</a>
             </div>
             <div className="header-buttons">
-              <button className="primary-button">Start for Free</button>
+              <button className="primary-button"
+              onClick={() => navigate('/register')}>Register</button>
               <button
                 className="secondary-button"
-                onClick={() => navigate('/dashboard')} // Ensure this is correctly set
+                onClick={() => navigate('/login')} // Ensure this is correctly set
               >
-                Explore Rooms
+                Login
               </button>
             </div>
           </nav>
@@ -51,7 +52,8 @@ export default function LandingPage() {
                 <p className="hero-description">Enhance your study sessions with intelligent tools and real-time interaction.</p>
               </div>
               <div className="hero-action-buttons">
-                <button className="hero-primary-button">Start for Free</button>
+                <button className="hero-primary-button"
+                onClick={() => navigate('/register')}>Start for Free</button>
                 <button className="hero-secondary-button"
                 onClick={() => navigate('/dashboard')}
                 >Explore Rooms</button>

@@ -1,39 +1,37 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-from app.models.rooms_models import RoomCreateRequest
-from app.models.room_db import Room
-from app.db import SessionLocal
+from fastapi import APIRouter
+from ..models.rooms_models import RoomCreateRequest
+from app.services.firebase_service import db
+import uuid
 
 router = APIRouter()
 
-# Dependency to get DB session for each request
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
 @router.get("/")
-def get_rooms(db: Session = Depends(get_db)):
-    rooms = db.query(Room).all()
-    return {
-        "rooms": [
-            {"id": r.id, "name": r.name, "description": r.description}
-            for r in rooms
-        ]
-    }
+def get_rooms():
+    rooms_ref = db.collection("rooms")
+    docs = rooms_ref.stream()
+    rooms = []
+    for doc in docs:
+        room = doc.to_dict()
+        room["id"] = doc.id
+        rooms.append(room)
+    return {"rooms": rooms}
 
 @router.post("/")
-def create_room(data: RoomCreateRequest, db: Session = Depends(get_db)):
-    new_room = Room(name=data.name, description=data.description)
-    db.add(new_room)
-    db.commit()
-    db.refresh(new_room)
-    return {
-        "room": {
-            "id": new_room.id,
-            "name": new_room.name,
-            "description": new_room.description
-        }
+def create_room(data: RoomCreateRequest):
+    room_id = str(uuid.uuid4())
+    room_data = {
+        "name": data.name,
+        "description": data.description
     }
+    db.collection("rooms").document(room_id).set(room_data)
+    return {"room": { "id": room_id, **room_data }}
+@router.get("/rooms")
+async def get_rooms():
+    rooms_ref = db.collection("rooms")
+    docs = await rooms_ref.stream()
+    rooms = []
+    for doc in docs:
+        room = doc.to_dict()
+        room["id"] = doc.id
+        rooms.append(room)
+    return {"rooms": rooms}
