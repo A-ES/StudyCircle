@@ -89,3 +89,17 @@ In swagger UI goto POST /api/ai/message then click "try it out" and paste:
   "message": "Explain Newton's second law in simple terms"
 }
 ```
+
+## 🧰 Firebase Setup (Collaborator Instructions)
+
+### 🔷 Frontend
+
+1. Run `npm install firebase`
+3. Run `npm run dev`
+
+### 🔶 Backend
+
+1. Run `pip install -r requirements.txt` (includes `firebase-admin`)
+2. Ask Sabith for `credentials.json`
+3. Place it in the backend directory as `firebase/credentials.json` 
+4. Run backend: `uvicorn main:app --reload`
