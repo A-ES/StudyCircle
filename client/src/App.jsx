@@ -1,6 +1,7 @@
 // src/App.jsx
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import RoomDetail from "./pages/RoomDetail";
 
 import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
@@ -16,6 +17,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="*" element={<div>404 Page Not Found</div>} />
+        <Route path="/room/:id" element={<RoomDetail />} />
       </Routes>
     </Router>
   );

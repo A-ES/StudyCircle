@@ -1,30 +1,23 @@
-// src/pages/Dashboard.jsx
-import React, { useState, useEffect } from 'react';
-import { getRooms, createRoom } from '../api/index';
-import CreateRoomForm from '../components/CreateRoomForm';
-import RoomList from '../components/RoomList';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { getRooms, createRoom } from "../api/index";
 
 const Dashboard = () => {
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [newRoomName, setNewRoomName] = useState('');
-  const [newRoomDescription, setNewRoomDescription] = useState('');
+  const [newRoomName, setNewRoomName] = useState("");
+  const [newRoomDescription, setNewRoomDescription] = useState("");
   const [creatingRoom, setCreatingRoom] = useState(false);
 
-  // Fetch rooms when component loads
+  const user = JSON.parse(localStorage.getItem("user"));
+
   useEffect(() => {
     const fetchRooms = async () => {
       try {
         setLoading(true);
         setError(null);
         const response = await getRooms();
-<<<<<<< HEAD
-        setRooms(Array.isArray(response.data.rooms) ? response.data.rooms : []);
-
-        console.log("API response:", response);
-
-=======
 
         // ✅ Fix: extract rooms from response.data.rooms
         setRooms(Array.isArray(response.data.rooms) ? response.data.rooms : []);
@@ -32,6 +25,7 @@ const Dashboard = () => {
       } catch (err) {
         console.error('Error fetching rooms:', err);
         setError('Failed to load rooms');
+        setRooms([]);
       } finally {
         setLoading(false);
       }
@@ -52,43 +46,25 @@ const Dashboard = () => {
 >>>>>>> fbef61b66ac6ed2612390bad5bc2c8a382094e8b
     try {
       setCreatingRoom(true);
-
       const response = await createRoom(newRoomName, newRoomDescription);
 
-      // Add new room to local state
       setRooms((prevRooms) => [...prevRooms, response.data.room]);
-<<<<<<< HEAD
-=======
 
       // Reset form fields
->>>>>>> fbef61b66ac6ed2612390bad5bc2c8a382094e8b
       setNewRoomName('');
       setNewRoomDescription('');
     } catch (err) {
-      console.error('Error creating room:', err);
-      setError('Failed to create room');
+      console.error("Error creating room:", err);
+      setError("Failed to create room");
     } finally {
       setCreatingRoom(false);
     }
   };
 
-  if (loading) return <div className="p-6">Loading rooms...</div>;
-  if (error) return <div className="p-6 text-red-500">Error: {error}</div>;
+  if (loading) return <div>Loading rooms...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
-<<<<<<< HEAD
-    <div className="dashboard p-6 max-w-3xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">Study Rooms</h1>
-      <CreateRoomForm
-        newRoomName={newRoomName}
-        newRoomDescription={newRoomDescription}
-        onNameChange={(e) => setNewRoomName(e.target.value)}
-        onDescriptionChange={(e) => setNewRoomDescription(e.target.value)}
-        onCreate={handleCreateRoom}
-        creatingRoom={creatingRoom}
-      />
-      <RoomList rooms={rooms} />
-=======
     <div className="dashboard p-6 max-w-xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">📚 Study Rooms</h1>
 
@@ -115,7 +91,7 @@ const Dashboard = () => {
           onClick={handleCreateRoom}
           disabled={creatingRoom}
         >
-          {creatingRoom ? 'Creating...' : 'Create Room'}
+          {creatingRoom ? "Creating..." : "Create Room"}
         </button>
       </div>
 
@@ -123,12 +99,33 @@ const Dashboard = () => {
         <p>No rooms available</p>
       ) : (
         <div className="room-list space-y-4">
-          {rooms.map((room) => (
-            <div key={room.id} className="room-card border p-4 rounded shadow">
-              <h3 className="text-lg font-semibold">{room.name}</h3>
-              <p className="text-gray-600">{room.description}</p>
-            </div>
-          ))}
+          {rooms.map((room) => {
+            const isMember = room.members?.includes(user?.uid);
+
+            return (
+              <Link to={`/room/${room.id}`} key={room.id}>
+                <div
+                  className={`room-card border p-4 rounded shadow transition hover:shadow-md hover:bg-blue-50 ${
+                    isMember ? "border-green-500 bg-green-50" : ""
+                  }`}
+                >
+                  <h3 className="text-lg font-semibold">{room.name}</h3>
+                  <p className="text-gray-600">{room.description}</p>
+
+                  <p className="text-sm text-gray-500 mt-2">
+                    👥 {room.members?.length || 0} members{" "}
+                    · 💬 {room.messages?.length || 0} messages
+                  </p>
+
+                  {isMember && (
+                    <p className="text-green-600 text-sm mt-1">
+                      ✅ You’ve joined this room
+                    </p>
+                  )}
+                </div>
+              </Link>
+            );
+          })}
         </div>
       )}
 >>>>>>> fbef61b66ac6ed2612390bad5bc2c8a382094e8b
