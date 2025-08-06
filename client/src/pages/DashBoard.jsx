@@ -16,15 +16,11 @@ const Dashboard = () => {
     const fetchRooms = async () => {
       try {
         setLoading(true);
-        setError(null);
         const response = await getRooms();
-
-        // ✅ Fix: extract rooms from response.data.rooms
         setRooms(Array.isArray(response.data.rooms) ? response.data.rooms : []);
->>>>>>> fbef61b66ac6ed2612390bad5bc2c8a382094e8b
       } catch (err) {
-        console.error('Error fetching rooms:', err);
-        setError('Failed to load rooms');
+        console.error("Error fetching rooms:", err);
+        setError("Failed to load rooms");
         setRooms([]);
       } finally {
         setLoading(false);
@@ -36,23 +32,14 @@ const Dashboard = () => {
 
   const handleCreateRoom = async () => {
     if (!newRoomName.trim() || !newRoomDescription.trim()) return;
-<<<<<<< HEAD
-    if (rooms.some((room) => room.name === newRoomName.trim())) {
-      setError('Room with this name already exists');
-      return;
-    }
-=======
 
->>>>>>> fbef61b66ac6ed2612390bad5bc2c8a382094e8b
     try {
       setCreatingRoom(true);
       const response = await createRoom(newRoomName, newRoomDescription);
 
       setRooms((prevRooms) => [...prevRooms, response.data.room]);
-
-      // Reset form fields
-      setNewRoomName('');
-      setNewRoomDescription('');
+      setNewRoomName("");
+      setNewRoomDescription("");
     } catch (err) {
       console.error("Error creating room:", err);
       setError("Failed to create room");
@@ -61,11 +48,11 @@ const Dashboard = () => {
     }
   };
 
-  if (loading) return <div>Loading rooms...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (loading) return <div className="p-6">Loading rooms...</div>;
+  if (error) return <div className="p-6 text-red-600">Error: {error}</div>;
 
   return (
-    <div className="dashboard p-6 max-w-xl mx-auto">
+    <div className="dashboard p-6 max-w-2xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">📚 Study Rooms</h1>
 
       <div className="create-room mb-6">
@@ -128,7 +115,6 @@ const Dashboard = () => {
           })}
         </div>
       )}
->>>>>>> fbef61b66ac6ed2612390bad5bc2c8a382094e8b
     </div>
   );
 };
