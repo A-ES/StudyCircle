@@ -22,15 +22,24 @@ export default function RoomDetail() {
   }, [id]);
 
   const joinRoom = async () => {
+    if (!user?.uid) {
+      console.error("User UID not found in localStorage");
+      return;
+    }
+  
     try {
+      console.log("Joining with UID:", user.uid);
+  
       await axios.post(`http://localhost:8000/api/rooms/${id}/join`, {
-        uid: user?.uid,
+        uid: user.uid,
       });
+  
       setJoined(true);
     } catch (err) {
-      console.error("Join error", err);
+      console.error("Join error:", err.response?.data || err.message);
     }
   };
+  
 
   if (loading) return <div className="text-white p-4">Loading...</div>;
   if (!room) return <div className="text-red-400 p-4">Room not found</div>;
